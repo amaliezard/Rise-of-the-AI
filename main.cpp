@@ -263,7 +263,6 @@ void initialise()
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
-
 void process_input()
 {
     g_game_state.player->set_movement(glm::vec3(0.0f));
@@ -280,16 +279,24 @@ void process_input()
             case SDL_KEYDOWN:
                 switch (event.key.keysym.sym) {
                     case SDLK_q:
-                        // Quit the game with a keystroke
                         g_app_status = TERMINATED;
                         break;
                         
                     case SDLK_SPACE:
-                        // Jump
                         if (g_game_state.player->get_collided_bottom())
                         {
                             g_game_state.player->jump();
                             Mix_PlayChannel(-1, g_game_state.jump_sfx, 0);
+                        }
+                        break;
+
+                    case SDLK_k:
+                        // kill enemies close to the player with K
+                        for (int i = 0; i < ENEMY_COUNT; i++) {
+                            if (g_game_state.enemies[i].is_active() &&
+                                glm::distance(g_game_state.player->get_position(), g_game_state.enemies[i].get_position()) < 1.0f) {
+                                g_game_state.enemies[i].deactivate();
+                            }
                         }
                         break;
                         
